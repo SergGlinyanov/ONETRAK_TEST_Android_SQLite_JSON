@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -153,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = database.query(DBHelper.TABLE_DATA,
                 null, null, null, null, null, null);
         if (cursor != null) {
-
-            cursor.moveToPosition(0);
+/////////////////////////////////////////////////////////////
+            cursor.moveToPosition(cursor.getCount()-5);
             w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
             w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
             w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
@@ -210,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 block1.setVisibility(View.GONE);
             }
 ///////////////////////////////////////////////////////////////
-            cursor.moveToPosition(1);
+            cursor.moveToPosition(cursor.getCount()-4);
             w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
             w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
             w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
@@ -274,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 block2.setVisibility(View.GONE);
             }
 //////////////////////////////////////////////////////////////
-            cursor.moveToPosition(2);
+            cursor.moveToPosition(cursor.getCount()-3);
             w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
             w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
             w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
                 block3.setVisibility(View.GONE);
             }
 /////////////////////////////////////////////////////
-            cursor.moveToPosition(3);
+            cursor.moveToPosition(cursor.getCount()-2);
             w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
             w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
             w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
@@ -401,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
                 block4.setVisibility(View.GONE);
             }
 ///////////////////////////////////////////////////////////////////////////
-            cursor.moveToPosition(4);
+            cursor.moveToPosition(cursor.getCount()-1);
             w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
             w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
             w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
@@ -509,6 +510,49 @@ public class MainActivity extends AppCompatActivity {
                 ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, 0);
             }
         });
+        dlg.show();
+
+
+    }
+//DataBase check
+    public void allInfo(View view) {
+
+        final TextView result = new TextView(context);
+        result.setMovementMethod(new ScrollingMovementMethod());
+
+        dbHelper = new DBHelper(this);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_DATA, null, null, null,
+                null, null, null);
+        if (cursor != null) {
+
+
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToPosition(i);
+                w = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DATE));
+                w1 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_AEROBIC));
+                w2 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RUN));
+                w3 = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_WALK));
+
+                date = new Date(Long.parseLong(w));
+                reportDate = df.format(date);
+                targetComplit = w1 + w2 + w3;
+                String summ = ("\n   " + reportDate + "                   " + targetComplit + " steps" + "\n" +
+                "          walk         " + w3 + "\n          aerobic    " + w1 +
+                        "\n          run            " + w2 + "\n");
+                result.setText(result.getText() + summ);            }
+        }
+        cursor.close();
+        dbHelper.close();
+
+
+
+        final AlertDialog dlg = new AlertDialog.Builder(this).
+                setTitle("Result").
+                setView(result).
+                setCancelable(false).
+                setPositiveButton("Ok", null).
+                create();
         dlg.show();
 
 
